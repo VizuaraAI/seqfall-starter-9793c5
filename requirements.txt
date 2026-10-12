@@ -1,0 +1,23 @@
+# Core evaluation. Everything here is needed for `python -m src.evaluate`.
+pyyaml>=6.0.2
+numpy>=2.1.0
+pandas>=2.2.3
+matplotlib>=3.9.2
+tqdm>=4.67.1
+
+# Local model inference (src/models.py HFBackend).
+torch>=2.5.1
+transformers>=4.57.0
+accelerate>=1.2.0
+sentencepiece>=0.2.0
+
+# Talking to a vLLM or llama.cpp server (src/models.py OpenAIBackend).
+openai>=1.59.0
+
+# Optional week-7 extension: DPO on serialisation quality (src/train.py).
+datasets>=3.2.0
+trl>=0.23.0
+peft>=0.14.0
+
+# Optional: pull the BFCL parallel splits for the A6 re-scoring experiment.
+huggingface-hub>=0.27.0

@@ -1,0 +1,91 @@
+# Default SeqFall configuration.
+#
+# As shipped this runs the scripted backend: no GPU, no downloads, about two
+# seconds. It exists so you can see the whole pipeline work before you trust it
+# with a real model. Scripted numbers are synthetic and must never go in a
+# results table.
+#
+# To run a real model, comment out the scripted entry and uncomment the hf ones.
+
+suite:
+  n_per_cell: 15          # 15 x 4 regimes x 4 k values = 240 items; use 56 for the full 900
+  ks: [2, 3, 4, 6]
+  regimes: [independent, commutative_write, order_sensitive, dependent]
+  seed: 20261012
+  inject_faults: false    # flip to true for the A3 recovery experiment
+
+harnesses:
+  - h1_native
+  - h2_parallel_forced
+  - h3_serial_sanctioned
+  - h4_serial_repeat
+
+max_turns: 0              # 0 means len(reference_calls) + 2
+per_call_latency: 0.25    # seconds charged per tool call in the latency model
+alpha: 0.25               # GDS weight on turn inflation
+beta: 0.25                # GDS weight on latency inflation
+
+backend_defaults:
+  temperature: 0.0
+  max_new_tokens: 384
+
+models:
+  - tag: scripted-tiny
+    backend: scripted
+    profile: tiny
+    seed: 11
+  - tag: scripted-small
+    backend: scripted
+    profile: small
+    seed: 12
+  - tag: scripted-mid
+    backend: scripted
+    profile: mid
+    seed: 13
+
+  # --- real models: the parameter ladder from the paper -------------------
+  # - tag: qwen2.5-0.5b
+  #   backend: hf
+  #   model_id: Qwen/Qwen2.5-0.5B-Instruct
+  # - tag: qwen2.5-1.5b
+  #   backend: hf
+  #   model_id: Qwen/Qwen2.5-1.5B-Instruct
+  # - tag: qwen2.5-3b
+  #   backend: hf
+  #   model_id: Qwen/Qwen2.5-3B-Instruct
+  # - tag: qwen2.5-7b
+  #   backend: hf
+  #   model_id: Qwen/Qwen2.5-7B-Instruct
+  # - tag: qwen3-1.7b-nothink
+  #   backend: hf
+  #   model_id: Qwen/Qwen3-1.7B
+  #   enable_thinking: false
+  # - tag: qwen3-1.7b-think
+  #   backend: hf
+  #   model_id: Qwen/Qwen3-1.7B
+  #   enable_thinking: true
+  # - tag: llama-3.2-1b
+  #   backend: hf
+  #   model_id: meta-llama/Llama-3.2-1B-Instruct
+  # - tag: llama-3.2-3b
+  #   backend: hf
+  #   model_id: meta-llama/Llama-3.2-3B-Instruct
+  # - tag: phi-3-mini
+  #   backend: hf
+  #   model_id: microsoft/Phi-3-mini-4k-instruct
+  # - tag: smollm2-1.7b
+  #   backend: hf
+  #   model_id: HuggingFaceTB/SmolLM2-1.7B-Instruct
+  # - tag: xlam-2-1b
+  #   backend: hf
+  #   model_id: Salesforce/Llama-xLAM-2-1b-fc-r
+  # - tag: xlam-2-3b
+  #   backend: hf
+  #   model_id: Salesforce/Llama-xLAM-2-3b-fc-r
+  #
+  # --- 7B and above: serve with vLLM and use the openai backend ----------
+  # vllm serve Qwen/Qwen2.5-32B-Instruct --port 8000
+  # - tag: qwen2.5-32b-ceiling
+  #   backend: openai
+  #   model_id: Qwen/Qwen2.5-32B-Instruct
+  #   base_url: http://localhost:8000/v1

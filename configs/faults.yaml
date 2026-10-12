@@ -1,0 +1,33 @@
+# A3: fault injection. One call in every task fails on its first attempt, which
+# tests whether a serialised trace can actually recover from the observation it
+# gets for free. This is the experiment that could falsify the project's
+# hypothesis, so run it early and report it either way.
+
+suite:
+  n_per_cell: 15
+  ks: [2, 3, 4]
+  regimes: [independent, commutative_write, dependent]
+  seed: 20261012
+  inject_faults: true
+
+harnesses:
+  - h1_native
+  - h3_serial_sanctioned
+
+max_turns: 8
+per_call_latency: 0.25
+alpha: 0.25
+beta: 0.25
+
+backend_defaults:
+  temperature: 0.0
+  max_new_tokens: 384
+
+models:
+  - tag: scripted-small
+    backend: scripted
+    profile: small
+    seed: 21
+  # - tag: qwen2.5-1.5b
+  #   backend: hf
+  #   model_id: Qwen/Qwen2.5-1.5B-Instruct
